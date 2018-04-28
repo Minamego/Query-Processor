@@ -1,5 +1,11 @@
 package cQueryProcessor;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
+import spark.Request;
+import spark.Response;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -8,31 +14,33 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import static spark.Spark.post;
+
 @WebServlet(urlPatterns = {"/Login"})
 public class Login extends HttpServlet {
 
-    public static String username = null;
+    private  MongoCollection<Document> users;
+    Login(MongoCollection<org.bson.Document> u)
+    {
+        users = u;
+    }
+    public void doPost()  {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        post("/login", (Request request, Response response) ->
+        {
+            response.type("text/html");
 
-        response.setContentType("text/html");
+            String uname = request.queryParams("uname");
+            String psw = request.queryParams("psw");
 
-        PrintWriter out = response.getWriter();
+            if (authontication(uname, psw)) {
+                String results = generatHomePage(uname);
+                return  results;
 
-        String uname = request.getParameter("uname");
-        String psw = request.getParameter("psw");
-
-        if(authontication(uname,psw)){
-
-            username = uname;
-            String results = generatHomePage();
-            out.println(results);
-
-        }else{
-
-            out.println("invalid name or password");
-
-        }
+            } else {
+                return "invalid name or password";
+            }
+        });
 
     }
 
@@ -41,13 +49,14 @@ public class Login extends HttpServlet {
     }
 
 
-    // TODO: implement Sign in authontication
     private boolean authontication(String username,String psw){
-        if(username.equals("Hamada") && psw.equals("1234"))return true;
-        return false;
+        Document user =  users.find(new BasicDBObject("username", username)).first();
+        if(user==null) return  false;
+        if(user.getString("password").equals(psw)) return  true;
+        return  false;
     }
 
-    public String generatHomePage(){
+    static public String generatHomePage(String username){
 
         String htmlPage ="<html>\n" +
                 "<head>\n" +
@@ -66,9 +75,10 @@ public class Login extends HttpServlet {
                 "        <h1 style=\"font-size: 120px; margin-top: 100px; color: #1a1a1a; background-color:#bfbfbf; width: 500px;\n" +
                 "    border-radius: 20px 20px 20px 20px;\">Cirage</h1>\n" +
                 "\n" +
-                "        <form  action=\"/search\" method=\"get\">\n" +
+                "        <form  action=\"/search\" method=\"post\">\n" +
                 "            <input type=\"text\" placeholder=\"Search...\" name=\"search\" required>\n" +
                 "            <br/><br/>\n" +
+                "    <input type=\"hidden\" name=\"username\" value=\"" + username +"\">\n" +
                 "            <button id = \"search_button\" value = \"Go to hello\" class=\"button-search\"><span>Search</span></button>\n" +
                 "            <button class=\"button-login\" style=\"display: none;\" onclick=\"document.getElementById('id01').style.display='block'\" style=\"width:auto; margin-left: 20px;\"><span>Login</span></button>\n" +
                 "        </form>\n" +

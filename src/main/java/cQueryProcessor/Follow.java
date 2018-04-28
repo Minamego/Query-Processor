@@ -1,43 +1,50 @@
 package cQueryProcessor;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 
-@WebServlet(urlPatterns = {"/follow"})
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
+import spark.Request;
+import spark.Response;
+import sun.rmi.runtime.Log;
+
+import javax.servlet.http.HttpServlet;
+
+
+import static spark.Spark.post;
+
 public class Follow extends HttpServlet {
 
-    private String isFollowing = null;
+    private MongoCollection<Document> documents;
+    Follow(MongoCollection<Document>  docs)
+    {
+        documents = docs;
+    }
+    public void doPost() {
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        post("/follow" ,(Request request , Response response)-> {
+            response.type("text/html");
+            String url = request.queryParams("url");
+            String username = request.queryParams("username");
+            String query = request.queryParams("query");
 
-
+            if (request.queryParams("follow").equals("yes")) {
+                DBObject listItem = new BasicDBObject("interested", username);
+                BasicDBObject updateQuery = new BasicDBObject("$addToSet", listItem);
+                BasicDBObject updateObject = new BasicDBObject("url", url);
+                documents.updateOne(updateObject, updateQuery);
+            } else {
+                DBObject listItem = new BasicDBObject("interested", username);
+                BasicDBObject updateQuery = new BasicDBObject("$pull", listItem);
+                BasicDBObject updateObject = new BasicDBObject("url", url);
+                documents.updateOne(updateObject, updateQuery);
+            }
+            return Login.generatHomePage(username);
+        });
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
-        if(request.getParameter("follow").equals("yes")){
-            isFollowing = "unfollow";
-
-            String url = request.getParameter("url");
-            String username = Login.username;
-            // TODO: Save that the user is interested in by the url
-
-            Search.intersed.add(Integer.parseInt(request.getParameter("indx")),true);
-
-        }else{
-            isFollowing = "follow";
-        }
-        String results = generatResultsPage();
-        out.println(results);
-    }
-
-    private String generatResultsPage(){
+    /*private String generatResultsPage(){
 
         String htmlPage = "<!DOCTYPE html>\n" +
                 "<html>\n" +
@@ -61,7 +68,8 @@ public class Follow extends HttpServlet {
                 "    <h1><a href = \"index.jsp\"><span style=\"color: #1a1a1a;\">Cirage</span></a></h1>\n" +
                 "    <input type=\"text\" placeholder=\"Search..\" name=\"search\" value=\"" + Search.query +"\">\n" +
                 "    <button type=\"submit\"><i class=\"fa fa-search\"></i></button>\n" +
-                "    <a href=\"#\"><img id = \"bell\"" +(Login.username == null ? "style=\"display: none;":"")+"\" onclick=\"hello();\" src=\"bell-icon.png\"/></a>\n" +
+                "    <a href=\"#\"><img id = \"bell\"" +(Login.username == null ? "style=\"display: none;":"")+"\" " +
+                "onclick=\"document.getElementById('id01').style.display='block'\" src=\"bell-icon.png\"/></a>\n"  +
                 "</form>\n" +
                 "\n" +
                 "</div>\n" +
@@ -86,6 +94,27 @@ public class Follow extends HttpServlet {
                     "</form>"+
                     "\n";
         }
+
+        if(Login.username != null) {
+            // Adding notificaion list
+            htmlPage = htmlPage + "<div id=\"id01\" class=\"modal\">\n" +
+                    "  <form class=\"modal-content animate\" action=\"/action_page.php\">\n" +
+                    "    <div class=\"notificontainer\">\n" +
+                    "        <ul id=\"myUL\">\n" +
+                    "          <li style=\"margin-bottom: 20px; background: white;\"> \n" +
+                    "           <span onclick=\"document.getElementById('id01').style.display='none'\" class=\"close\" title=\"Close Notifications\">&times;</span></li>\n ";
+            for (int i = 0; i < Search.urlsNotifs.size(); ++i){
+                htmlPage = htmlPage + "<li><a href = \""+ Search.urlsNotifs.get(i) + "\">" +
+                        Search.titlesNotifs.get(i) +"</a></li>\n";
+            }
+            htmlPage = htmlPage + "</ul>\n" +
+                    "    </div>\n" +
+                    "\n" +
+                    "    </div>\n" +
+                    "  </form>\n" +
+                    "</div>\n\n";
+        }
+
         htmlPage = htmlPage + "\n" +
                 "\n" +
                 "</div>\n" +
@@ -374,5 +403,5 @@ public class Follow extends HttpServlet {
                 "</html>";
 
         return htmlPage;
-    }
+    }*/
 }

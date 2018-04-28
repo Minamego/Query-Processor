@@ -3,7 +3,7 @@ package cQueryProcessor;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
-
+import static spark.Spark.*;
 public class queryProcessor {
     static  private Stem stemmer;
     private HashMap<String,Boolean>stopWords = new HashMap<>();
@@ -86,11 +86,8 @@ public class queryProcessor {
     }
 
     public static void main(String[] args){
-        Scanner sc = new Scanner(System.in);
-        String str = sc.nextLine();
-        queryProcessor qp = new queryProcessor(str);
-        qp.run();
-        System.out.println(qp.query);
+
+        get("/hello", (req, res) -> "Hello World");
     }
 
 

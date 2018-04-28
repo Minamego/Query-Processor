@@ -1,39 +1,52 @@
 package cQueryProcessor;
 
-import javax.servlet.ServletException;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
+import spark.Request;
+import spark.Response;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.ArrayList;
+
+import static spark.Spark.post;
 
 @WebServlet(urlPatterns = {"/SignUp"})
 public class SignUp extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        response.setContentType("text/html");
-
-        PrintWriter out = response.getWriter();
-        String uname = request.getParameter("uname");
-        String psw = request.getParameter("psw");
-
-        if(authontication(uname)) {
-            Login lg = new Login();
-            Login.username = uname;
-            out.println(lg.generatHomePage());
-        }else{
-            out.println("Username is already taken , choose another one");
-        }
+    private static MongoCollection<Document> users;
+    SignUp(MongoCollection<org.bson.Document> u)
+    {
+        users = u;
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doPost() {
 
+        post("/signup", (Request request, Response response) ->
+        {
+            response.type("text/html");
+
+            String uname = request.queryParams("uname");
+            String psw = request.queryParams("psw");
+
+            if (authontication(uname , psw)) {
+               return  Login.generatHomePage(uname);
+            } else {
+                return "Username is already taken , choose another one";
+            }
+        });
     }
 
-    //TODO : implemnt the function -- if(user is already in data base )return false; else return true;
-    private boolean authontication(String username){
-        if(username.equals("Hamada"))return false;
-        return true;
+    private boolean authontication(String username ,String password ){
+       Document user =  users.find(new BasicDBObject("username", username)).first();
+       if(user != null) return false;
+        user = new Document();
+        ArrayList<String>arr = new ArrayList<>();
+        user.append("username", username)
+                .append("password", password)
+                .append("notifications_urls" , arr)
+                .append("notifications_titles" , arr);
+        users.insertOne(user);
+        return  true;
     }
 }

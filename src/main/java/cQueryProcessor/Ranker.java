@@ -100,7 +100,8 @@ public class Ranker {
     }
 
     public static void normalSearch( ArrayList<Document> mWords, MongoCollection<Document> mDocs , MongoCollection<Document> mLinks,
-                                     ArrayList<String> retUrls, ArrayList<String> retPars, ArrayList<String> retTitles, ArrayList<Boolean> retInterested ) {
+                                     ArrayList<String> retUrls, ArrayList<String> retPars, ArrayList<String> retTitles, ArrayList<Boolean> retInterested ,
+                                     String username) {
         long mDocumentsCnt = mDocs.count();
         Map<Integer, Double> mPriorities = new HashMap<>();
         Map<Integer, Integer> mUrlWordsCnt = new HashMap<>();
@@ -109,6 +110,7 @@ public class Ranker {
         Map<Integer, Document> mUrlDoc = new HashMap<>();
 
         for (Document word : mWords) {
+            if(word == null) continue;
             Document details = (Document) word.get("details");
             Set<String> urls = details.keySet();
             for (String urlID : urls) {
@@ -122,12 +124,14 @@ public class Ranker {
                     double pr = doc.getDouble("page_rank");
                     mUrlRank.put(key, pr);
                     mUrlId.put(key, link);
+                    mUrlDoc.put(key , doc);
                 }
             }
         }
         Map<Integer , Integer> goodPos = new HashMap<>();
 
         for (Document word : mWords) {
+            if(word == null) continue;;
             Document details = (Document) word.get("details");
             Set<String> urls = details.keySet();
             double IDF = Math.log(1.0 * mDocumentsCnt / urls.size());
@@ -137,7 +141,7 @@ public class Ranker {
                 int key = Integer.parseInt(urlID);
                 double TF = 1.0 * tags.size() / mUrlWordsCnt.get(key);
                 if (TF > 0.5) continue;
-                if(goodPos.get(key) == null) goodPos.put(key ,( (ArrayList<Integer>) url.get("tag")).get(0));
+                if(goodPos.get(key) == null) goodPos.put(key ,( (ArrayList<Integer>) url.get("positions")).get(0));
                 double tag = 0.0;
                 for (int i = 0; i < tags.size(); ++i) {
                     tag += tags.get(i);
@@ -152,6 +156,7 @@ public class Ranker {
             Pair tmp = new Pair(url.getKey(), url.getValue() * mUrlRank.get(url.getKey()));
             urls.add(tmp);
         }
+        if(urls.isEmpty()) return;
         ArrayList<Integer> results = Sort(urls);
 
 
@@ -163,30 +168,32 @@ public class Ranker {
             retTitles.add(doc.getString("title"));
 
             ArrayList<String> data = (ArrayList<String>) doc.get("url_data");
+            ArrayList<String> users = (ArrayList<String>) doc.get("interested");
             int sum = 0;
             int pos = goodPos.get(results.get(k));
             for (int j = 0; j < data.size(); ++j) {
                 sum += data.get(j).split(" ").length;
-                if (sum > pos) {
+                if (sum >= pos) {
                     String par = "";
                     par += data.get(j);
                     int a = j;
                     j++;
                     a--;
-                    while (par.length() < MAXLEN && j < data.size()) par += data.get(j++);
-                    while (par.length() < MAXLEN && a >= 0) par = data.get(a--) + par;
+                    while (par.length() < MAXLEN && j < data.size()) par += " " +  data.get(j++);
+                    while (par.length() < MAXLEN && a >= 0) par = data.get(a--) +" "+ par;
                     retPars.add(par);
                     break;
                 }
             }
-            //todo: add real interested value
-            retInterested.add(false);
+            if(users.contains(username)) retInterested.add(true);
+            else retInterested.add(false);
 
         }
     }
 
     public static  void phraseSearch(ArrayList<Document> mWords, MongoCollection<Document> mDocs , MongoCollection<Document> mLinks,
-                                     ArrayList<String> retUrls, ArrayList<String> retPars, ArrayList<String> retTitles, ArrayList<Boolean> retInterested )
+                                     ArrayList<String> retUrls, ArrayList<String> retPars, ArrayList<String> retTitles, ArrayList<Boolean> retInterested ,
+                                     String username)
     {
         Map<Integer, String> mUrlId = new HashMap<>();
         Map<Integer, Document> mUrlDoc = new HashMap<>();
@@ -194,6 +201,7 @@ public class Ranker {
         int i = 0;
         for(Document word : mWords)
         {
+            if(word == null) return;
             Document details = (Document)word.get("details");
             Set<String> urlsStr = details.keySet();
             ArrayList<Integer> urls = new ArrayList<>();
@@ -250,26 +258,29 @@ public class Ranker {
             retTitles.add(doc.getString("title"));
 
             ArrayList<String> data = (ArrayList<String>) doc.get("url_data");
+            ArrayList<String> users = (ArrayList<String>) doc.get("interested");
             int sum = 0;
             int pos = goodPos.get(results.get(k));
+            String par = "";
             for(int j = 0 ; j<data.size() ; ++j)
             {
                 sum +=  data.get(j).split(" ").length;
                 if(sum > pos)
                 {
-                    String par = "";
+
                     par += data.get(j);
                     int a = j;
                     j++;
                     a--;
-                    while(par.length() < MAXLEN && j<data.size())  par += data.get(j++);
-                    while(par.length() < MAXLEN && a>=0)  par =  data.get(a--) + par;
-                    retPars.add(par);
+                    while(par.length() < MAXLEN && j<data.size())  par += " " + data.get(j++);
+                    while(par.length() < MAXLEN && a>=0)  par =  data.get(a--) +" " +  par;
+
                     break;
                 }
             }
-            //todo: add real interested value
-            retInterested.add(false);
+            retPars.add(par);
+            if(users.contains(username)) retInterested.add(true);
+            else retInterested.add(false);
         }
     }
 
