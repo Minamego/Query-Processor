@@ -524,8 +524,6 @@ public class Search extends HttpServlet {
         log.doPost();
         Follow follow = new Follow(documents);
         follow.doPost();
-        Home home = new Home();
-        home.Home();
         AutoComplete ac = new AutoComplete(past);
         ac.doGet();
     }

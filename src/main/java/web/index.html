@@ -1,0 +1,76 @@
+<html>
+<head>
+    <title>Cirage Search Engine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="HomePage.css">
+
+</head>
+<body style="background-color: #1a1a1a;">
+
+<script src= "HomePage.js" type="text/javascript">
+
+</script>
+
+    <center>
+        <h1 style="font-size: 120px; margin-top: 100px; color: #1a1a1a; background-color:#bfbfbf; width: 500px;
+    border-radius: 20px 20px 20px 20px;">Cirage</h1>
+
+        <form  action="/search" method="post" autocomplete="off">
+            <input id="searchBox" type="text" placeholder="Search..." name="search" onkeyup="suggestion(this.value);" required>
+            <br><table id="tableSuggestions" style="border: 1px solid black;"></table>
+            <br/><br/>
+            <button id = "search_button" value = "Go to hello" class="button-search"><span>Search</span></button>
+        </form>
+        <button class="button-login" onclick="document.getElementById('id01').style.display='block'" style="width:auto; margin-left: 20px;"><span>Login</span></button>
+
+    </center>
+
+    <div id="id01" class="modal">
+        <form class="modal-content animate" action="/login" method="post">
+            <div class="imgcontainer">
+                <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+                <img src="smile.png" alt="smile" class="smile">
+            </div>
+
+            <div class="container">
+                <label for="uname"><b>Username</b></label>
+                <input id=login placeholder="Enter Username" name="uname" required>
+
+                <label for="psw"><b>Password</b></label>
+                <input id=login type="password" placeholder="Enter Password" name="psw" required>
+
+                <button type="submit">Sign in</button>
+
+            </div>
+
+            <div class="container" style="background-color:#f1f1f1">
+                <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+                <button type="button" onclick="viewSignUpForm();" class="signupbtn">Sign Up</button>
+            </div>
+        </form>
+    </div>
+
+
+    <div id="id02" class="modal">
+        <form class="modal-content animate" action="/signup" method="post">
+            <div class="imgcontainer">
+                <span onclick="document.getElementById('id02').style.display='none'" class="close" title="Close Modal">&times;</span>
+            </div>
+
+            <div class="container">
+                <label for="uname"><b>Username</b></label>
+                <input id=login placeholder="Enter Your Username" name="uname" required>
+
+                <label for="psw"><b>Password</b></label>
+                <input id=login placeholder="Enter Your Password" name="psw" required>
+
+                <button type="submit">Create Account</button>
+            </div>
+
+            <div class="container" style="background-color:#f1f1f1">
+                <button type="button" onclick="document.getElementById('id02').style.display='none'" class="cancelbtn">Cancel</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

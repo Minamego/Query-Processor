@@ -1,0 +1,286 @@
+body {
+    /* font-family: Arial; */
+    background-color: #1a1a1a;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+form.search a {
+    margin-top: 10px;
+}
+
+form.search input[type=text] {
+    padding: 10px;
+    margin-top: 15px;
+    margin-left: 10px;
+    font-size: 17px;
+    border-radius: 5px 0 0 5px;
+    border: 1px solid grey;
+    float: left;
+    width: 40%;
+    background: #f1f1f1;
+}
+
+form.search button {
+    float: left;
+    margin-top: 15px;
+    width: 10%;
+    height: 42px;
+    padding: 10px;
+    background: orange;
+    background-image: url('searchicon2.png');
+    background-repeat: no-repeat;
+    color: white;
+    font-size: 17px;
+    border: none;
+    border-radius: 0px 5px 5px 0px;
+    border-left: none;
+    cursor: pointer;
+}
+
+form.search button:hover {
+    opacity: 0.8;
+}
+
+form.search::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+form.search h1 {
+    float: left;
+    margin-top: 10px;
+    margin-left: 10px;
+    width: 10%;
+}
+
+form.search h1:hover {
+    text-decoration: none;
+}
+
+form.search a {
+    font-size: 36px;
+    text-decoration: none;
+}
+
+#bell {
+    margin-top: 16px;
+    margin-right: 15px;
+    margin-left: 15px;
+    float: right;
+    width: 30px;
+    height: 30px;
+}
+
+#bell:hover {
+    width: 35px;
+    height: 35px;
+}
+
+form.result {
+    margin-top: 40px;
+    margin-bottom: 0px;
+}
+form.result h1,form.result a {
+    width: 65%;
+    font-family: Arial;
+    font-size: 20px;
+    margin-left: 5px;
+    margin-bottom: 2px;
+    color: #FF7F00;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+
+form.result h1:hover,a:hover {
+    text-decoration: underline;
+}
+
+
+form.result u {
+    font-size: medium;
+    color : #cccccc;
+    margin-left: 10px;
+    text-decoration: none;
+}
+
+form.result p {
+    margin-left: 10px;
+    margin-top: 2px;
+    font-size: medium;
+    font-family: arial,sans-serif;
+    color: gray;
+    width: 50%;
+}
+
+form.follow {
+
+    margin-left: 10px;
+    margin-bottom: 70px;
+}
+
+
+form.follow a {
+
+    font-family: Arial;
+    font-size: 20px;
+    margin-left: 10px;
+    margin-bottom: 2px;
+    margin-right: 10px;
+    color: white;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+form.follow input[type=submit] {
+    background-color: orange;
+    color: white;
+    padding: 7px 10px;
+    border: none;
+    border-radius: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+
+
+.pagingBar {
+    margin-left: 12%;
+    margin-bottom: 50px;
+    margin-top: 50px;
+}
+
+button.NextButton {
+
+    margin-left: 15px;
+    background-color: orange;
+    color: white;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 5px 5px 5px 5px;
+    cursor: pointer;
+
+}
+
+button.PreviousButton {
+    margin-right: 15px;
+    background-color: orange;
+    color: white;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 5px 5px 5px 5px;
+    cursor: pointer;
+}
+
+button.pageButton {
+
+    background-color: white;
+    color: black;
+    padding: 7px 10px;
+    border: none;
+    border-radius: 5px 5px 5px 5px;
+    cursor: pointer;
+
+}
+
+
+button:hover {
+    opacity: 0.8;
+}
+
+form.modal-content ul {
+    margin: 0;
+    padding: 0;
+}
+
+/* Style the list items */
+form.modal-content ul ,form.modal-content li {
+    cursor: pointer;
+    position: relative;
+    padding: 12px 8px 12px 40px;
+    list-style-type: none;
+    background: #eee;
+    font-size: 18px;
+    transition: 0.2s;
+
+    /* make the list items unselectable */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Set all odd list items to a different color (zebra-stripes) */
+form.modal-content ul ,form.modal-content li:nth-child(odd) {
+    background: #f9f9f9;
+}
+
+/* Darker background-color on hover */
+form.modal-content ul , form.modal-content li:hover {
+    background: #ddd;
+}
+/* Center the image and position the close button */
+.notificontainer {
+    text-align: center;
+    margin: 24px 0 12px 0;
+    position: relative;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    padding-top: 60px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+    border-radius: 10px 10px 10px 10px;
+    background-color: #fefefe;
+    margin: 0% auto 15% 65%; /* 5% from the top, 15% from the bottom and centered */
+    border: 1px solid #888;
+    width: 30%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button (x) */
+.close {
+    position: absolute;
+    right: 25px;
+    top: 0;
+    color: #000;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: red;
+    cursor: pointer;
+}
+
+/* Add Zoom Animation */
+.animate {
+    -webkit-animation: animatezoom 0.6s;
+    animation: animatezoom 0.6s
+}
+
+@-webkit-keyframes animatezoom {
+    from {-webkit-transform: scale(0)}
+    to {-webkit-transform: scale(1)}
+}
+
+@keyframes animatezoom {
+    from {transform: scale(0)}
+    to {transform: scale(1)}
+}
